@@ -10,10 +10,12 @@ PROVIDER = "idefix"
 SERVER = "0.0.0.0"
 PORT = 7900
 
+
 def success(action):
     return json.dumps({action: True})
 
-def failure(action, message=""):
+def failure(action, request, message="", code=401):
+    request.setResponseCode(code)
     return json.dumps(
         {action: False, 'message': message})
 
@@ -27,11 +29,10 @@ def exists(request):
     except Exception:
         key = None
     if not key:
-        request.setResponseCode(500)
-        return failure('exists', 'no user provided')
+        return failure(
+            action, request, 'no user provided', 400)
     if key not in userdb.keys():
-        request.setResponseCode(401)
-        return failure(action, 'user does not exist')
+        return failure(action, request, 'user does not exist', 400)
     return success(action)
 
 
@@ -43,11 +44,9 @@ def isvalid(request):
     except Exception:
         key = None
     if not key:
-        request.setResponseCode(500)
-        return failure(action, 'no key provided')
+        return failure(action, request, 'no key provided', 500)
     if key not in userdb.viewvalues():
-        request.setResponseCode(401)
-        return failure(action, 'user is not valid')
+        return failure(action, request, 'user is not valid', 401)
     return success(action)
 
 
@@ -60,14 +59,16 @@ def add(request):
     user = request.args.get('user')[0]
     key = request.args.get('key')[0]
     if not user or not key:
-        return failure(action)
+        return failure(action, request)
+    if user in userdb.keys():
+        return failure(
+            action, request, 'username already registered, and can register only key for now', 401)
     try:
         provider = user.split('@')[1]
         if provider != PROVIDER:
             raise TypeError()
     except Exception:
-        request.setResponseCode(401)
-        return failure(action, 'wrong username')
+        return failure(action, request, 'wrong username, does it belong to this provider?', 400)
     print "[%s:%s] Added" % (user, key)
     userdb[user] = key
     return success(action)
@@ -84,7 +85,6 @@ def list(request):
 @route('/del', methods=['POST'])
 def delete(request):
     action = 'del'
-    request.setResponseCode(500)
-    return failure(action, 'not implemented')
+    return failure(action, request, 'not implemented', 500)
 
 run(SERVER, PORT)
