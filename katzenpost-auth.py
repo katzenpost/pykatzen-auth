@@ -6,8 +6,8 @@ from klein import run, route
 
 userdb = {}
 
-PROVIDER = "localhost"
-SERVER = "localhost"
+PROVIDER = "idefix"
+SERVER = "0.0.0.0"
 PORT = 7900
 
 def success(action):
@@ -15,7 +15,7 @@ def success(action):
 
 def failure(action, message=""):
     return json.dumps(
-        {action: False, message: message})
+        {action: False, 'message': message})
 
 
 @route('/exists', methods=['POST'])
@@ -32,7 +32,7 @@ def exists(request):
     if key not in userdb.keys():
         request.setResponseCode(401)
         return failure(action, 'user does not exist')
-    return success(action, 'user exists')
+    return success(action)
 
 
 @route('/isvalid', methods=['POST'])
@@ -48,7 +48,7 @@ def isvalid(request):
     if key not in userdb.viewvalues():
         request.setResponseCode(401)
         return failure(action, 'user is not valid')
-    return success(action, 'user is valid')
+    return success(action)
 
 
 # TODO authenticate
@@ -56,6 +56,7 @@ def isvalid(request):
 def add(request):
     action = 'add'
     global userdb
+    print "ARGS", request.args
     user = request.args.get('user')[0]
     key = request.args.get('key')[0]
     if not user or not key:
@@ -66,10 +67,10 @@ def add(request):
             raise TypeError()
     except Exception:
         request.setResponseCode(401)
-        return failure(action, 'wrong')
+        return failure(action, 'wrong username')
     print "[%s:%s] Added" % (user, key)
     userdb[user] = key
-    return success(action, 'user added')
+    return success(action)
 
 
 @route('/list')
