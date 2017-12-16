@@ -3,12 +3,16 @@ Standalone userdb implementation for Katzenpost server.
 """
 import json
 from klein import run, route
+from twisted.persisted import dirdbm
 
-userdb = {}
-
+# Config ----------------------------------
 PROVIDER = "idefix"
 SERVER = "0.0.0.0"
 PORT = 7900
+DBPATH = "./userDB"
+# -----------------------------------------
+
+userdb = dirdbm.DirDBM(DBPATH)
 
 
 def success(action):
