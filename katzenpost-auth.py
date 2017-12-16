@@ -77,7 +77,6 @@ def add(request):
     userdb[user] = key
     return success(action)
 
-
 @route('/list')
 def list(request):
     action = 'list'
@@ -86,9 +85,22 @@ def list(request):
         print "[%s:%s]" % (k, v)
     return success(action)
 
+
+@route('/getkey')
+def getkey(request):
+    action = 'getkey'
+    user = request.args.get('user')[0]
+    if not user:
+        return failure(action, request, 'did not send user param', 400)
+    global userdb
+    key = userdb.get(user)
+    return json.dumps({action: True, 'key': key})
+
+
 @route('/del', methods=['POST'])
 def delete(request):
     action = 'del'
     return failure(action, request, 'not implemented', 500)
+
 
 run(SERVER, PORT)
