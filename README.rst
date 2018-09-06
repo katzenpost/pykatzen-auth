@@ -23,3 +23,13 @@ this API still needs to change.
 
 * [ ] decide what parts are public and which endpoints are internal only.
 * [ ] send IDKey and LINKKey separatedly.
+
+
+supported by
+============
+
+.. image:: https://katzenpost.mixnetworks.org/_static/images/eu-flag-tiny.jpg
+
+This project has received funding from the European Union’s Horizon 2020
+research and innovation programme under the Grant Agreement No 653497, Privacy
+and Accountability in Networks via Optimized Randomized Mix-nets (Panoramix).
